@@ -89,6 +89,8 @@ else
   if [ $? -ne 0 ]; then
      echo "Install failed: $TOOL"
      exit 1
+  else
+     echo "You probably want to add yourself to the docker group: sudo usermod -aG docker \${USER}. Logout/login to take affect"
   fi
 fi
 
