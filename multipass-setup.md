@@ -13,17 +13,18 @@ There are two recommended VM options: [multipass](https://multipass.run) and [Vi
     - Unfortunately, there isn’t a `multipass` option to increase disk storage (easily), but `multipass` allocates storage dynamically, so request much more than you need.
     - Multipass instances default to 1G of memory. There is a way to reallocate memory after instance creation, but you'll likely want at least 10GB.
 4. If not setting `sos-server` as primary, manually mount host disk access: `multipass mount $HOME sos-server:/home/ubuntu/[dir]`
-    - _MacOS_: For `multipass` to access Documents/Downloads:
+    
+5. _MacOS_: For `multipass` to access Documents/Downloads:
         - System Preferences -> Security & Privacy -> Full Disk Access
         - Unlock and select _multipassd_.
-5. Launch shell
+6. Launch shell
     - If `sos-server` is the primary instance:
         1. `multipass shell`
     - Else:
         1. `multipass start sos-server`
         2. `multipass shell sos-server`
     - These commands can be used to restart the shell after any `multipass stop [instance]`.
-6. Add host routing to your local machine:
+7. Add host routing to your local machine:
     1. Get multipass IP address: `multipass info sos-server`
     2. Edit your local machine's hosts: `sudo nano /etc/hosts`
     3. Add the follow lines to the end of the file:
@@ -31,7 +32,7 @@ There are two recommended VM options: [multipass](https://multipass.run) and [Vi
         192.168.64.2    alert.dev.spire.com
         192.168.64.2    soc.dev.spire.com
         ```
-7. Access addresses through VPN(s) (if not connected automatically)
+8. Access addresses through VPN(s) (if not connected automatically)
     1. Find utun number(s) (while connected to the VPN(s)): `netstat -nr | grep utun`
         - The `utun[#]` is associated with the IP addresses
     2. Add the following line to /etc/pf.conf after nat\* line for each of the utun numbers
