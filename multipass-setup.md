@@ -34,8 +34,11 @@ There are two recommended VM options: [multipass](https://multipass.run) and [Vi
 7. Access addresses through VPN(s) (if not connected automatically)
     1. Find utun number(s) (while connected to the VPN(s)): `netstat -nr | grep utun`
         - The `utun[#]` is associated with the IP addresses
-    2. Add the following line to /etc/pf.conf after nat\* line
+    2. Add the following line to /etc/pf.conf after nat\* line for each of the utun numbers
         - `nat on utun[#] from bridge100:network to any -> (utun[#])`
+        - For example if you have utun1 and utun2 listed, add the following:
+          `nat on utun1 from bridge100:network to any -> (utun1)`
+          `nat on utun2 from bridge100:network to any -> (utun2)`
     3. Refresh (with `multipass` instance running): `sudo pfctl -f /etc/pf.conf`
     4. Stop `multipass` instance: `multipass stop`
     5. Restart `multipass`:
