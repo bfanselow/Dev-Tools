@@ -102,7 +102,7 @@ if [ "$MEM" = "" ]; then
    MEM=${DEFAULT_MEM}
 fi
 
-LAUNCH_CMD="multipass launch --name $NAME --disk $DISK --mem $MEM --cpu ${CPU}"
+LAUNCH_CMD="multipass launch --name $NAME --disk $DISK --mem $MEM --cpus ${CPU}"
 echo $LAUNCH_CMD
 #$LAUNCH_CMD
 
