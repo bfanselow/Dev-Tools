@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################################
 #
 # Create/launch a new multipass instance
@@ -41,27 +43,82 @@
 #
 #########################################################################
 
-NAME="sos-server1"
-DISK="100G"
-MEM=“20G"
-CPUS=3
+MYNAME="multipass_launch.sh"
 
-LOCAL_DATA_PATH="/Users/williamfanselow/MultiPass/mounts/${NAME}"
-MOUNT_TARGET="/home/spire/${NAME}"
+LOCAL_DATA_PATH_BASE="/Users/williamfanselow/MultiPass/mounts"
+MOUNT_TARGET_BASE="/home/spire"
 
-LAUNCH="multipass launch --name $NAME --disk $DISK --mem $MEM --cpu ${CPUS}”
-MOUNT="multipass mount $LOCAL_DATA_PATH ${NAME}:${MOUNT_TARGET}"
+NAME=""
+CPU=""
+DISK=""
+MEM=""
 
-if [ -d $LOCAL_DATA_PATH ]; then
-  echo "Local data path exists: $LOCAL_DATA_PATH"
+# Defaults
+DEFAULT_DISK="100G"
+DEFAULT_MEM="10G"
+DEFAULT_CPU=1
+MOUNT=0
+
+## Parse the args: key/value pairs are assumed to passed as "<key>=<val>"
+while [ "$1" != "" ]; do
+    PARAM=`echo $1 | awk -F= '{print $1}'`
+    VALUE=`echo $1 | awk -F= '{print $2}'`
+    echo "$PARAM=$VALUE"
+    case $PARAM in
+        "--name")
+          NAME=$VALUE
+        ;;
+        "--cpu")
+          CPU=$VALUE
+        ;;
+        "--disk")
+          DISK=$VALUE
+        ;;
+        "--mem")
+          MEM=$VALUE
+        ;;
+        "--mount")
+          MOUNT=1
+        ;;
+    esac
+    shift
+done
+
+
+# We require name
+if [ "X${NAME}" = "X" ]; then
+   echo ""
+   echo "$MYNAME: Cmd-line ERROR: must provide name (--name <name>)"
+   exit 1
 fi
 
+if [ "$CPU" = "" ]; then
+   CPU=${DEFAULT_CPU}
+fi
+if [ "$DISK" = "" ]; then
+   DISK=${DEFAULT_DISK}
+fi
+if [ "$MEM" = "" ]; then
+   MEM=${DEFAULT_MEM}
+fi
 
-echo $LAUNCH
-echo $MOUNT
+LAUNCH_CMD="multipass launch --name $NAME --disk $DISK --mem $MEM --cpu ${CPU}"
+echo $LAUNCH_CMD
+#$LAUNCH_CMD
 
-$LAUNCH
-$MOUNT
+if [ $MOUNT -eq 1 ]; then
+  LOCAL_DATA_PATH="${LOCAL_DATA_PATH_BASE}/${NAME}"
+  MOUNT_TARGET="${MOUNT_TARGET_BASE}/${NAME}"
+
+  if [ -d $LOCAL_DATA_PATH ]; then
+    MOUNT_CMD="multipass mount $LOCAL_DATA_PATH ${NAME}:${MOUNT_TARGET}"
+    echo $MOUNT_CMD
+    #$MOUNT_CMD
+  else
+    echo "$MYNAME: ERROR - Local data path does not exist: $LOCAL_DATA_PATH"
+    exit 1
+  fi
+fi
 
 sleep 1
-multipass info $NAME
+#multipass info $NAME
